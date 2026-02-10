@@ -35,7 +35,7 @@ brew install gmp mpfr libmpc
 
 1.  Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/mandelbrot_adaptive.git
+    git clone https://github.com/mterenzi/mandelbrot_adaptive.git
     cd mandelbrot_adaptive
     ```
 
