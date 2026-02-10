@@ -3,7 +3,7 @@ use std::ops::AddAssign;
 use rug::{Complex, Float};
 
 const PRECISION: u32 = 128;
-pub const MAX_ITER: u32 = 20000;
+pub const MAX_ITER: u32 = 50000;
 
 pub struct HighPrecisionState {
     pub reference: Complex, // The anchor

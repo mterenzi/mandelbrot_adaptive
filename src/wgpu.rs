@@ -332,7 +332,7 @@ impl WgpuState<'_> {
             .log10()
             .to_f32();
 
-        let mut target_iters = 5000 + (100.0 * log_zoom) as u32;
+        let mut target_iters = 2000 + (100.0 * log_zoom) as u32;
         if target_iters > MAX_ITER {
             target_iters = MAX_ITER;
         }

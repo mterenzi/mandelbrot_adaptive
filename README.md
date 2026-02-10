@@ -1,49 +1,51 @@
-# Mandelbrot 32
+# Mandelbrot Adaptive
 
-A high-performance, hardware-accelerated Mandelbrot set renderer written in Rust using [wgpu](https://wgpu.rs/).
+A high-performance, GPU-accelerated Mandelbrot set explorer written in Rust.
 
-## Overview
-
-This project renders the Mandelbrot set in real-time using the GPU. It leverages `wgpu` for cross-platform graphics API support (Vulkan, Metal, DX12, WebGPU) and `winit` for window management. The rendering logic is implemented via a WGSL fragment shader, allowing for smooth zooming and panning.
+This project uses **WGPU** for rendering and **Rug** (GMP/MPFR) for arbitrary precision arithmetic, allowing for extremely deep zooms beyond standard floating-point limits.
 
 ## Features
 
-*   **GPU Acceleration**: Utilizes the GPU for parallel fractal calculation, ensuring high frame rates.
-*   **32-bit Precision**: Renders using 32-bit floating point precision.
-*   **Real-time Rendering**: Supports dynamic updates to zoom and position.
-*   **Cross-Platform**: Runs on Linux, Windows, and macOS thanks to the portable `wgpu` backend.
+-   **Deep Zooming**: Capable of zooming up to **10^38** magnification using 128-bit high-precision floats.
+-   **GPU Acceleration**: Utilizes WGPU for efficient rendering.
+-   **Adaptive Iterations**: Automatically adjusts iteration counts based on zoom level to maintain detail.
+-   **Perturbation Theory**: Uses reference orbits to accelerate high-precision calculations on the GPU. Based on the method described at [mandelbrot.site](https://mandelbrot.site/).
+
+## ⚠️ Photosensitivity / Strobe Warning
+
+**Please Read Before Running:**
+
+This application can produce rapid changes in contrast and color patterns, especially when zooming in or out quickly. If you have a history of photosensitive epilepsy or are sensitive to flashing lights/patterns, please exercise caution or avoid using the zoom features aggressively.
 
 ## Prerequisites
 
-*   Rust (Latest stable toolchain).
-*   A graphics card compatible with Vulkan, Metal, DirectX 12, or WebGPU.
+To build this project, you need Rust installed. You also need the system development libraries for GMP and MPFR, as the `rug` crate depends on them.
 
-## Getting Started
+### Linux (Debian/Ubuntu)
+```bash
+sudo apt-get install libgmp-dev libmpfr-dev libmpc-dev
+```
 
-1.  **Clone the repository:**
+### macOS
+```bash
+brew install gmp mpfr libmpc
+```
 
+## Installation & Running
+
+1.  Clone the repository:
     ```bash
-    git clone https://github.com/mterenzi/mandelbrot_32
-    cd mandelbrot
+    git clone https://github.com/yourusername/mandelbrot_adaptive.git
+    cd mandelbrot_adaptive
     ```
 
-2.  **Run the project:**
-
-    It is highly recommended to run in release mode for optimal performance.
-
+2.  Run with Cargo:
     ```bash
     cargo run --release
     ```
+    *Note: Release mode is highly recommended for performance.*
 
-## Project Structure
+## Controls
 
-*   **`src/wgpu.rs`**: Handles the WGPU context setup, surface configuration, render pipeline creation, and the main render pass.
-*   **`src/primitives.rs`**: Defines the data structures (`Vertex`, `Uniforms`) shared between the CPU and the GPU.
-*   **`src/shaders/mandelbrot_32.wgsl`**: The shader source code responsible for calculating the Mandelbrot iterations per pixel.
-
-## Dependencies
-
-*   `wgpu`: Graphics API abstraction.
-*   `winit`: Window creation and event handling.
-*   `bytemuck`: Utilities for casting data to bytes for GPU buffers.
-*   `pollster`: Simple async executor for WGPU initialization.
+-   **Mouse Scroll**: Zoom in and out.
+-   **Mouse Position**: The zoom centers on the mouse cursor.
