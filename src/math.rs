@@ -1,4 +1,4 @@
-use std::ops::AddAssign;
+use std::{f32::consts::PI, ops::AddAssign};
 
 use rug::{Complex, Float};
 
@@ -47,8 +47,9 @@ impl HighPrecisionState {
         center: &Complex,
         zoom: &Float,
         max_iter: u32,
+        num_samples: u32,
     ) -> (Complex, u32) {
-        // 1. Check the center first
+        // Check the center first
         let center_score = self.get_escape_time(center, max_iter);
         if center_score == max_iter {
             return (center.clone(), center_score);
@@ -59,25 +60,18 @@ impl HighPrecisionState {
         let mut best_point = center.clone();
         let mut best_score = center_score;
 
-        // Create a search radius (e.g., 0.5 * screen width approx)
-        // Since we don't have aspect ratio here, just assume square or use 1.0/zoom
         let one = Float::with_val(PRECISION, 1.0);
         let radius = one / zoom;
 
-        // Simple 4-corner + center search pattern (you can increase this for better stability)
-        let offsets = [
-            (0.0, 0.0), // Check center (Camera) first
-            (0.1, 0.1),
-            (0.1, -0.1),
-            (-0.1, 0.1),
-            (-0.1, -0.1), // Corners
-            (0.2, 0.0),
-            (-0.2, 0.0),
-            (0.0, 0.2),
-            (0.0, -0.2), // Cardinals
-        ];
+        for i in 0..num_samples {
+            // Generate offsets using a simple golden ratio spiral for even distribution
+            let t = i as f32 / num_samples as f32;
+            let angle = 2.0 * PI * 21.0 * t; // Spiral factor
+            let dist = t * 2.0;
 
-        for (ox, oy) in offsets {
+            let ox = angle.cos() * dist;
+            let oy = angle.sin() * dist;
+
             let mut candidate = center.clone();
             let dx = Float::with_val(PRECISION, ox) * &radius;
             let dy = Float::with_val(PRECISION, oy) * &radius;

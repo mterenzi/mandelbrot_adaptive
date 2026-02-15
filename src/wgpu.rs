@@ -332,7 +332,7 @@ impl WgpuState<'_> {
             .log10()
             .to_f32();
 
-        let mut target_iters = 2000 + (100.0 * log_zoom) as u32;
+        let mut target_iters = 500 + (100.0 * log_zoom) as u32;
         if target_iters > MAX_ITER {
             target_iters = MAX_ITER;
         }
@@ -364,23 +364,22 @@ impl WgpuState<'_> {
             self.uniform_data.uniforms.offset = [0.0, 0.0];
         } else {
             // Case B: Camera is in the ocean.
-            // Check if we need to rescue the reference.
+            // Check if we need to fix the reference.
             if !is_ref_valid {
-                // Reference died! Search for a survivor.
-                // Note: We use the camera as the search center, not the old reference.
-                let (best_point, _) = self.uniform_data.fractal_state.find_best_reference(
+                let (best_point, best_score) = self.uniform_data.fractal_state.find_best_reference(
                     &self.uniform_data.fractal_state.camera,
                     &self.uniform_data.fractal_state.zoom,
                     target_iters,
+                    64,
                 );
 
-                // Update reference to the new best point
-                self.uniform_data
-                    .fractal_state
-                    .reference
-                    .assign(&best_point);
+                if best_score > current_ref_score {
+                    self.uniform_data
+                        .fractal_state
+                        .reference
+                        .assign(&best_point);
+                }
             }
-            // If ref WAS valid, we just kept it (Fallthrough).
 
             // Calculate Offset (Reference -> Camera)
             // We do this for both "Search" and "Keep Old" paths
